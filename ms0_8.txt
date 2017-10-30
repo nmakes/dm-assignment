@@ -1,0 +1,50 @@
+ASSOCIATION RULES
+student_gp , time_slot -> item
+
+minsup:  0.8 %
+minconf:  0 %
+maxsup:  100 %
+maxconf:  100 %
+
+Running on file:  Dataset/augSales.csv
+
+F3 , 10-11 PM  ->  Ice Cream Shake  : s= 0.915871966764 % | c= 14.4416873449 %
+F3 , 11-12 AM  ->  Chese Toast  : s= 0.887546029648 % | c= 13.9053254438 %
+F2 , 11-12 AM  ->  Ice Cream Shake  : s= 1.00084977811 % | c= 15.2884615385 %
+F3 , 11-12 AM  ->  Ice Cream Shake  : s= 0.966229188305 % | c= 15.1380670611 %
+F2 , 10-11 PM  ->  Ice Cream Shake  : s= 0.931608598496 % | c= 15.0330116811 %
+
+ Total outputCount:  5
+--x--x--
+
+Running on file:  Dataset/sepSales.csv
+
+F3 , 10-11 PM  ->  Chese Toast  : s= 0.846609712922 % | c= 14.5310435931 %
+F3 , 5-6 PM  ->  Veg Petty  : s= 0.874830036686 % | c= 39.4447657606 %
+F2 , 5-6 PM  ->  Veg Petty  : s= 1.48156699761 % | c= 39.800137836 %
+F3 , 11-12 AM  ->  Chese Toast  : s= 1.20706021191 % | c= 17.7983733686 %
+F4 , 11-12 AM  ->  Chese Toast  : s= 0.840196002976 % | c= 19.9695121951 %
+F2 , 11-12 AM  ->  Ice Cream Shake  : s= 0.811975679212 % | c= 12.3199688595 %
+F3 , 11-12 AM  ->  Ice Cream Shake  : s= 0.878678262654 % | c= 12.9563079251 %
+F2 , 11-12 AM  ->  Chese Toast  : s= 0.855588906847 % | c= 12.9817049436 %
+F2 , 10-11 PM  ->  Ice Cream Shake  : s= 0.817106647169 % | c= 14.0092368595 %
+
+ Total outputCount:  9
+--x--x--
+
+Running on file:  Dataset/octSales.csv
+
+F2 , 5-6 PM  ->  Veg Petty  : s= 1.79560018498 % | c= 35.2529182879 %
+
+ Total outputCount:  1
+--x--x--
+
+Running on file:  Dataset/novSales.csv
+
+F2 , 5-6 PM  ->  Veg Petty  : s= 2.08035969169 % | c= 34.4970414201 %
+F2 , 5-6 PM  ->  Pastry  : s= 0.872466457322 % | c= 14.4674556213 %
+F2 , 11-12 AM  ->  Chese Toast  : s= 0.856408792464 % | c= 12.8997581295 %
+
+ Total outputCount:  3
+--x--x--
+
