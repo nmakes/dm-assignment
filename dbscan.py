@@ -12,7 +12,9 @@ class point:
 	'''
 
 	oneHotDistance = 1
-	epsRadius = 
+	epsRadius = 0.001
+	minNbd = 20
+
 	def __init__(self, ATTR= None, TYPE = None):
 		'''
 			Sample ATTR :-
@@ -65,3 +67,21 @@ print distance(point1, point2)
 def dbsScan(pointList):
 	
 	for point in pointList:
+		
+		nbd = 0
+		boundaryCandidate = False
+
+		for nb in pointList:
+			if distance(point, nb) < point.epsRadius:
+				nbd += 1
+				if nb.TYPE == 'core':
+					boundaryCandidate = True
+
+		nbd -= 1	# excluding point itself
+
+		if nbd > point.minNbd:
+			point.TYPE = 'core'
+		elif boundaryCandidate:
+			point.TYPE = 'boundary'
+		else:
+			point.TYPE = 'noise'
