@@ -26,4 +26,7 @@ class Apriori:
 				for i in range(len(line)):
 					records[sno][header[i]] = line[i]
 
+	def support(itemset):
+		pass
+
 	
