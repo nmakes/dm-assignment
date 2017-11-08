@@ -181,6 +181,8 @@ class P1:
 	def readNewPrices():
 		
 		newPrices = {}
+		segments = ['F1','F2','F3','F4','F5','H1','H2','oth']
+		i = 0
 
 		with open(config.newPriceFileName) as newPriceFile:
 			
@@ -193,13 +195,21 @@ class P1:
 				
 				if headRead:
 					header = line
-					print header
+					# print header
 					headRead = False
 				else:
-					newPrices[(line[0], line[1])] = (line[2], line[3])
-					pass
+					itemID = line[0]
+					hour = line[2]
+					price = line[1]
 
-			print newPrices.keys()
+					newPrices[ (itemID, hour) ] = {}
+					i = 3
+					
+					for segment in segments:
+						newPrices[ (itemID, hour) ][segment] = line[i]
+						i += 1
+
+			# print newPrices.keys()
 
 		return newPrices
 
@@ -212,28 +222,42 @@ class P1:
 			where qty is the quantity of item <itemID> sold in december
 		'''
 		decemberData = {}
+		totalItemsSold = 0
+		profit = 0
 
-		with decemberFile as open(config.decemberFileName):
+		with open(config.decemberFileName) as decemberFile:
 
+			decReader = csv.reader(decemberFile)
+			
 			ignoreHead = True
 
-			for line in decemberFile:
+			for line in decReader:
 
 				if ignoreHead:
 					ignoreHead = False
-					continue
-
-				itemID = int(line[0])
-				qty = int(line[3])
-
-				print itemID, qty
-
-				if itemID in decemberData.keys():
-					decemberData += qty
 				else:
-					decemberData[itemID] = 0
 
-		newPrices = readNewPrices()
+					# print line
+					itemID = int(line[2])
+					qty = int(line[3])
+
+					# print itemID, qty
+
+					if itemID in decemberData.keys():
+						decemberData[itemID] += qty
+						totalItemsSold += qty
+					else:
+						decemberData[itemID] = qty
+						totalItemsSold += qty
+
+		dat = [(key, decemberData[key]) for key in sorted(decemberData.keys())]
+		print dat
+		print len(dat)
+		print totalItemsSold
+
+
+		newPrices = P1.readNewPrices()
 		profit = 0
 		
-		# for (itemID, Hour) in newPrices.keys():
+		for (itemID, hour) in newPrices.keys():
+			
