@@ -10,4 +10,12 @@ minconf = ZERO
 maxsup = INF
 maxconf = INF
 
-minRevenueXpercent = 5
+
+param_X = 0.05 # 5%
+
+param_Y = 0.20 # 20%
+param_M = 10
+param_Z = 0.08 # 8%
+
+newPriceFileName = "Dataset/newPrices.csv"
+decemberFileName = "Dataset/decSales.csv"

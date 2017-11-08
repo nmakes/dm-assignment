@@ -12,6 +12,7 @@ class P1:
 
 	@staticmethod
 	def getSegmentWeight(segment):
+
 		if segment=='F1':
 			return 12
 		elif segment=='F2':
@@ -32,7 +33,30 @@ class P1:
 
 	@staticmethod
 	def getHourWeight(hours):
-		pass
+		if hours > 6:
+			return 6**2
+		else:
+			return (hours ** 2)
+
+
+	@staticmethod
+	def getSegmentWeight(segment):
+		if segment=='F1':
+			return 12
+		elif segment=='F2':
+			return 32
+		elif segment=='F3':
+			return 30
+		elif segment=='F4':
+			return 20
+		elif segment=='F5':
+			return 3
+		elif segment=='H1':
+			return 2
+		elif segment=='H2':
+			return 2
+		else:
+			return 1
 
 
 	@staticmethod
@@ -40,9 +64,9 @@ class P1:
 
 		totalPenalty = 0
 
-		if len(newPriceList) == len(oldPriceList) == len(hourList) == len(segmentWeightList):
+		if len(newPriceList) == len(oldPriceList) == len(hourList) == len(segmentList):
 			for i in range(newPriceList):
-				totalPenalty += ( (newPriceList[i] - oldPriceList[i]) * P1.getHourWeight(hourList[i]) * P1.getSegmentWeight(segmentWeightList[i]) )
+				totalPenalty += ( (newPriceList[i] - oldPriceList[i]) * P1.getHourWeight(hourList[i]) * P1.getSegmentWeight(segmentList[i]) )
 
 		return totalPenalty
 	
@@ -148,3 +172,68 @@ class P1:
 				print " : s=", str(sup), "% | c=", conf, "%"
 
 		print "\n Total outputCount: ", outputCount
+
+
+
+# CALCULATING PROFIT
+
+	@staticmethod
+	def readNewPrices():
+		
+		newPrices = {}
+
+		with open(config.newPriceFileName) as newPriceFile:
+			
+			newPriceReader = csv.reader(newPriceFile, delimiter=',')
+			headRead = True
+
+			i = 0
+
+			for line in newPriceReader:
+				
+				if headRead:
+					header = line
+					print header
+					headRead = False
+				else:
+					newPrices[(line[0], line[1])] = (line[2], line[3])
+					pass
+
+			print newPrices.keys()
+
+		return newPrices
+
+
+	@staticmethod
+	def calculateProfit():
+
+		'''
+			decemberData[itemID] = qty
+			where qty is the quantity of item <itemID> sold in december
+		'''
+		decemberData = {}
+
+		with decemberFile as open(config.decemberFileName):
+
+			ignoreHead = True
+
+			for line in decemberFile:
+
+				if ignoreHead:
+					ignoreHead = False
+					continue
+
+				itemID = int(line[0])
+				qty = int(line[3])
+
+				print itemID, qty
+
+				if itemID in decemberData.keys():
+					decemberData += qty
+				else:
+					decemberData[itemID] = 0
+
+		newPrices = readNewPrices()
+		profit = 0
+		
+		# for (itemID, Hour) in newPrices.keys():
