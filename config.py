@@ -9,3 +9,5 @@ minsup = 0.01
 minconf = ZERO
 maxsup = INF
 maxconf = INF
+
+minRevenueXpercent = 5

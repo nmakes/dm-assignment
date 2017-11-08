@@ -22,9 +22,20 @@ config.minconf = float(raw_input('Enter MinConf:'))
 
 P1.runFunc1OnFiles(monthFileList, monthWisePricelistFile, monthFileNameList)
 
-# with open('pre_data.csv', 'w', newline='') as csvfile:
+# -----------
 
-#     writer = csv.writer(csvfile, delimiter=',')
+with open("Dataset/newPrices.csv") as newPriceFile:
 
-#     for i in file_output:
-#         writer.writerow(i)
+    newPriceReader = csv.reader(newPriceFile, delimiter=',')
+    headRead = True
+
+    for line in newPriceReader:
+        
+        if headRead:
+            header = line
+            print header
+            headRead = False
+        else:
+            
+
+# -----------
