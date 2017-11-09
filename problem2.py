@@ -1,94 +1,101 @@
 import csv
 import config
 
+
 class P2:
 
+    @staticmethod
+    def runFunc1OnFiles(monthFileList, monthWisePricelistFile,
+                        monthFileNameList=None):
 
-	@staticmethod
-	def runFunc1OnFiles(monthFileList, monthWisePricelistFile, monthFileNameList = None):
+        print "ASSOCIATION RULES"
+        print "student_gp , time_slot -> item"
 
-		print "ASSOCIATION RULES"
-		print "student_gp , time_slot -> item"
+        print
+        print "minsup: ", config.minsup, "%"
+        print "minconf: ", config.minconf, "%"
+        print "maxsup: ", config.maxsup, "%"
+        print "maxconf: ", config.maxconf, "%"
+        print
 
-		print
-		print "minsup: ", config.minsup, "%"
-		print "minconf: ", config.minconf, "%"
-		print "maxsup: ", config.maxsup, "%"
-		print "maxconf: ", config.maxconf, "%"
-		print
+        for i in range(len(monthFileList)):
+            print "Running on file: ", monthFileNameList[i]
+            print
+            monthWisePricelistFile.seek(0, 0)
+            P2.Func1(monthFileList[i], monthWisePricelistFile)
+            print "--x--x--"
+            print
 
-		for i in range(len(monthFileList)):
-			print "Running on file: ", monthFileNameList[i]
-			print
-			monthWisePricelistFile.seek(0,0)
-			P2.Func1(monthFileList[i], monthWisePricelistFile)
-			print "--x--x--"
-			print
+    @staticmethod
+    def Func1(monthFile, monthWisePricelistFile):
+        '''
+                Obtain associations between items:
 
+                        [item1 , item2 , ...] -> itemX
 
-	@staticmethod
-		def Func1(monthFile, monthWisePricelistFile):	
-			'''
-				Obtain associations between items:
+                where,
+                the LHS contains 1 or more items, and RHS contains 1 item
+                This association will find items bought together. This means,
+                                items that have been bought by a person, in a
+                                                                single bill.
+        '''
 
-					[item1 , item2 , ...] -> itemX
+        file_output = []
 
-				where,
-				the LHS contains 1 or more items, and RHS contains 1 item
-				This association will find items bought together. This means, items that have been bought by a person, in a single bill.
-			'''
+        reader = csv.reader(monthFile, delimiter=',')
 
-			file_output = []
+        next(reader)
 
-			reader = csv.reader(monthFile, delimiter=',')
+        support_count = {}
+        support_count_ant = {}
+        price_dict = {}
 
-			next(reader)
+        total_entries = 0
 
-			support_count = {}
-			support_count_ant = {}
-			price_dict = {}
+        for i in reader:
+            itemID = i[1]
+            date =
 
-			total_entries = 0
+            total_entries += 1
 
-			for i in reader:
-				itemID = i[1]
-				date = 
+            price_dict[itemID] = price
 
-				total_entries += 1
+            if((group, absHour, itemID) in support_count.keys()):
+                support_count[(group, absHour, itemID)] += 1
+                if int(itemID) > 1400:
+                    print i
+            else:
+                support_count[(group, absHour, itemID)] = 1
 
-				price_dict[itemID] = price
+            if (group, absHour) in support_count_ant.keys():
+                support_count_ant[(group, absHour)] += 1
+            else:
+                support_count_ant[(group, absHour)] = 1
 
-				if((group, absHour, itemID) in support_count.keys()):
-					support_count[(group, absHour, itemID)] += 1
-					if int(itemID) > 1400:
-						print i
-				else:
-					support_count[(group, absHour, itemID)] = 1
+        priceListReader = csv.reader(monthWisePricelistFile, delimiter=',')
+        next(priceListReader)
 
-				if (group, absHour) in support_count_ant.keys():
-					support_count_ant[(group, absHour)] += 1
-				else:
-					support_count_ant[(group, absHour)] = 1
+        items = {}
 
-			priceListReader = csv.reader(monthWisePricelistFile, delimiter=',')
-			next(priceListReader)
+        for i in priceListReader:
+            items[i[0]] = i[1]
 
-			items = {}
+        outputCount = 0
 
-			for i in priceListReader:
-				items[i[0]] = i[1]
+        for keys in support_count.keys():
 
-			outputCount = 0
+            (group, absHour, itemID) = keys
+            sup = float(support_count[keys]) * 100 / float(total_entries)
+            conf = float(float(support_count[keys]) * 100 /
+                         float(support_count_ant[(group, absHour)]))
 
-			for keys in support_count.keys():
-				
-				(group, absHour, itemID) = keys
-				sup = float(support_count[keys]) * 100 / float(total_entries)
-				conf = float( float(support_count[keys]) * 100 / float(support_count_ant[(group, absHour)]))
+            if (sup > config.minsup) and (sup < config.maxsup) and
+            (conf > config.minconf) and (conf < config.maxconf):
 
-				if ( sup > config.minsup ) and ( sup < config.maxsup ) and ( conf > config.minconf ) and ( conf < config.maxconf ):
-					outputCount += 1
-					print group, ",", P1.getTimeSlot(absHour), " -> ", items[itemID],
-					print " : s=", str(sup), "% | c=", conf, "%"
+                outputCount += 1
+                print group, ",", P1.getTimeSlot(absHour), " -> ",
+                items[itemID]
 
-			print "\n Total outputCount: ", outputCount
+                print " : s=", str(sup), "% | c=", conf, "%"
+
+        print "\n Total outputCount: ", outputCount
