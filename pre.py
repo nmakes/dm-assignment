@@ -1,29 +1,41 @@
-from problem1 import *
-import config
 import csv
 
-# ----------
+# Enter file name here
+file_name = '../Dataset/decSales.csv'
 
-'''
-# Preprocessing the data for ARM:
+output = []
 
-# 1. Finding the hour number (As an hour number where 1 is 4 pm)
-# 2. Finding the student's group (First year, second year, etc)
+with open(file_name, 'rb') as csv_file:
 
-monthFileList = [open('Dataset/augSales.csv'), open('Dataset/sepSales.csv'), open('Dataset/octSales.csv'), open('Dataset/novSales.csv')]
-monthFileNameList = ['Dataset/augSales.csv', 'Dataset/sepSales.csv', 'Dataset/octSales.csv', 'Dataset/novSales.csv']
-monthWisePricelistFile = open('Dataset/monthwisePriceList.csv')
+    reader = csv.reader(csv_file, delimiter=',')
 
-config.minsup = float(raw_input('Enter MinSup:'))
-config.minconf = float(raw_input('Enter MinConf:'))
+    next(reader)
 
-P1.runFunc1OnFiles(monthFileList, monthWisePricelistFile, monthFileNameList)
+    support_count = {}
+    support_count_ant = {}
+    price_dict = {}
 
-'''
+    for i in reader:
 
-# ----------
+        itemID = i[1]
+        date_time = i[3]
+        date = date_time.split(' ')[0]
+        time = date_time.split(' ')[1]
+        studID = i[-3]
 
-# P1.readNewPrices()
-P1.calculateProfit()
+        output.append([itemID, date, time, studID])
 
-# ----------
+
+output.sort(key=lambda x: x[2])
+output.sort(key=lambda x: x[-1])
+output.sort(key=lambda x: x[1])
+
+
+with open('decMod.csv', 'wb') as csvfile:
+
+    writer = csv.writer(csvfile, delimiter=',')
+
+    for o in output:
+
+        print o
+        writer.writerow(o)
