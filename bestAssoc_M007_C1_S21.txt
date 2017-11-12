@@ -1,0 +1,30 @@
+
+EXTRACTING DATA ... ... complete
+
+minsup = 0.007
+minconf = 0.1
+
+
+FINDING SUBSET SUPPORT ... itemsets done ... ... anticedents done ... ... complete
+
+ITEMSETS WITH SUPPORT > MINSUP AS FOLLOWS:-
+
+frozenset([128, 134]) | ['Chese Toast', 'Plain Maggi']  :  0.00830846748977
+frozenset([128, 76]) | ['Chese Toast', 'COKE MIX 600 ML']  :  0.00932692479497
+frozenset([164, 151]) | ['KADHAI PANEER', 'Butter Naan']  :  0.0139010488323
+frozenset([154, 151]) | ['Ice Cream Shake', 'Butter Naan']  :  0.00845140886594
+frozenset([76, 151]) | ['COKE MIX 600 ML', 'Butter Naan']  :  0.0104883234763
+frozenset([2, 123]) | ['Veg Petty', 'Pastry']  :  0.01193560491
+frozenset([128, 154]) | ['Chese Toast', 'Ice Cream Shake']  :  0.00948773384316
+frozenset([146, 151]) | ['Butter Chicken', 'Butter Naan']  :  0.0226562081226
+
+GETTING BEST ASSOCIATIONS ... complete
+
+['Plain Maggi'] --> ['Chese Toast']  :  0.141122428924
+['COKE MIX 600 ML'] --> ['Chese Toast']  :  0.150051109371
+['KADHAI PANEER'] --> ['Butter Naan']  :  0.736917914587
+['Ice Cream Shake'] --> ['Butter Naan']  :  0.169425132292
+['Butter Naan'] --> ['COKE MIX 600 ML']  :  0.199449889352
+['Pastry'] --> ['Veg Petty']  :  0.653539805255
+['Ice Cream Shake'] --> ['Chese Toast']  :  0.190200307076
+['Butter Chicken'] --> ['Butter Naan']  :  0.769125129178

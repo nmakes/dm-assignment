@@ -1,0 +1,17 @@
+
+EXTRACTING DATA ... ... complete --- 0.14675116539 seconds ---
+
+minsup = 0.005
+minconf = 0.05
+associations :  2 --> 1
+
+
+FINDING ITEMSET SUPPORT ... complete --- 354.470209122 seconds ---
+
+FINDING SUBSET SUPPORT ... complete --- 364.162712097 seconds ---
+
+ITEMSETS WITH SUPPORT > MINSUP AS FOLLOWS:-
+
+
+COMPLETED
+total execution time = --- 364.162712097 seconds ---

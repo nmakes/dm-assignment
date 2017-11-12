@@ -1,9 +1,33 @@
 import csv
 import config
+from sys import stdout
+from itertools import combinations as nCr
+import time
+
+
+start_time = time.time()
+
 
 monthFile = open("p2/novFinal.csv")
-
+monthWisePricelistFile = open("Dataset/monthwisePriceList.csv")
 reader = csv.reader(monthFile, delimiter=',')
+
+support_count = {}
+
+minsup = 0.000001
+minconf = 0.000001
+
+ItemSetSize = 3
+AnticedentSize = 2
+
+displayLiveResult = False
+
+def removeDups(li):
+	
+	for i in range(len(li)):
+		li[i] = frozenset(li[i])
+
+	return li
 
 def extractData(reader):
 	retList = []
@@ -18,109 +42,202 @@ def extractData(reader):
 
 		retList.append(intL)
 
-	retList.sort()
+	removeDups(retList)
+
 	return retList
 
-support_count = {}
+def itemSubsetSupportCount(data, itemSubset):
 
-for itemset in extractData(reader):
-	
-	if association in support_count.keys():
-		support_count[itemset] = 
+	support_count = 0
 
-	print associations
+	for itemset in data:
+		if itemSubset.issubset(itemset):
+			support_count += 1
 
-
-
+	return support_count
 
 
-class P2:
+def loadItems(monthWisePricelistFile):
+	reader = csv.reader(monthWisePricelistFile, delimiter=',')
 
-	@staticmethod
-	def runARMOnFiles(monthFileList, monthWisePricelistFile, monthFileNameList = None):
+	reader.next()
+	items = {}
 
-		print "ASSOCIATION RULES"
-		print "[item1, item2 .. item n] -> item"
+	for l in reader:
+		items[int(l[0])] = l[1]
 
-		print
-		print "minsup: ", config.minsup, "%"
-		print "minconf: ", config.minconf, "%"
-		print "maxsup: ", config.maxsup, "%"
-		print "maxconf: ", config.maxconf, "%"
-		print
-
-		for i in range(len(monthFileList)):
-			print "Running on file: ", monthFileNameList[i]
-			print
-			monthWisePricelistFile.seek(0,0)
-			P2.Func1(monthFileList[i], monthWisePricelistFile)
-			print "--x--x--"
-			print
+	return items
 
 
-	@staticmethod
-	def ARM(monthFile, monthWisePricelistFile):	
-		'''
-			Obtain associations between items:
+def nItemSubsetSupportCount(data, items, n, limit = None): # limit limits the number of iterations
 
-				[item1 , item2 , ...] -> itemX
+	support_count = {}
+	net_support_count = 0
 
-			where,
-			the LHS contains 1 or more items, and RHS contains 1 item
-			This association will find items bought together. This means, items that have been bought by a person, in a single bill.
-		'''
+	subsets = frozenset(nCr(items, n))
 
-		file_output = []
+	if limit == None:
+		limit = len(subsets)
 
-		reader = csv.reader(monthFile, delimiter=',')
+	for subset in subsets:
 
-		next(reader)
+		key = frozenset(subset)
+		sc = 0
 
-		support_count = {}
-		support_count_ant = {}
-		price_dict = {}
+		for itemset in data:
+			if key.issubset(itemset):
+				sc += 1
 
-		total_entries = 0
+		if sc!=0:
 
-		for i in reader:
-			itemID = i[1]
-			date = "CONTINUE CODE FROM HERE"
-
-			total_entries += 1
-
-			price_dict[itemID] = price
-
-			if((group, absHour, itemID) in support_count.keys()):
-				support_count[(group, absHour, itemID)] += 1
-				if int(itemID) > 1400:
-					print i
+			if key in support_count:
+				print "!!FATAL ERROR!!: RECURRING ITEMSET. CHECK CODE AGAIN"
 			else:
-				support_count[(group, absHour, itemID)] = 1
+				support_count[key] = sc
+				net_support_count += sc
 
-			if (group, absHour) in support_count_ant.keys():
-				support_count_ant[(group, absHour)] += 1
-			else:
-				support_count_ant[(group, absHour)] = 1
+		limit -= 1
 
-		priceListReader = csv.reader(monthWisePricelistFile, delimiter=',')
-		next(priceListReader)
+		if limit==0:
+			break
 
-		items = {}
+	return support_count, net_support_count
 
-		for i in priceListReader:
-			items[i[0]] = i[1]
 
-		outputCount = 0
+def getSupportFromCount(support_count, net_support_count, minsup=0):
 
-		for keys in support_count.keys():
+	support = {}
+
+	for i in support_count:
+		sup = float(support_count[i] / float(net_support_count))
+		
+		if sup > minsup:
+			support[i] = sup
+
+	return support
+
+
+def getBestAssociation(supports, ant_supports):
+
+	bestAssociations = []
+
+	ant_length = len(ant_supports.keys()[0])
+
+	for itemset in supports:
+
+		ant_combos = list(nCr(itemset, ant_length))
+		ants = []
+		
+		for c in ant_combos:
+			ants.append(frozenset(c))
+
+		ants = frozenset(ants)
+
+		#print ants
+
+		minAnt = None
+		minAntSup = 1
+
+		for ant in ants:
+			# the anticedent with the lower support count would yield a higher confidence of the association rule
+
+			if ant in ant_supports.keys():
 			
-			(group, absHour, itemID) = keys
-			sup = float(support_count[keys]) * 100 / float(total_entries)
-			conf = float( float(support_count[keys]) * 100 / float(support_count_ant[(group, absHour)]))
+				if minAnt == None:
+					minAnt = ant
+					minAntSup = ant_supports[minAnt]
+				else:
+					if ant_supports[ant] < minAntSup :
+						minAnt = ant
+						minAntSup = ant_supports[minAnt]
 
-			if ( sup > config.minsup ) and ( sup < config.maxsup ) and ( conf > config.minconf ) and ( conf < config.maxconf ):
-				outputCount += 1
-				print group, ",", P1.getTimeSlot(absHour), " -> ", items[itemID],
-				print " : s=", str(sup), "% | c=", conf, "%"
+		if minAnt != None:
 
-		print "\n Total outputCount: ", outputCount
+			consequent = itemset.difference(frozenset(minAnt))
+			bestConf = float(supports[itemset] / minAntSup)
+
+			bestAssociations.append( (minAnt, consequent, bestConf ) )
+
+	return bestAssociations
+
+items = loadItems(monthWisePricelistFile)
+# print items
+
+print
+print "EXTRACTING DATA ...",
+
+data = extractData(reader)
+
+print "... complete",
+print "--- %s seconds ---" % (time.time() - start_time)
+if displayLiveResult: stdout.flush()
+
+print
+print "minsup =", minsup
+print "minconf =", minconf
+print "associations : ", AnticedentSize, "-->", ItemSetSize - AnticedentSize
+print
+if displayLiveResult: stdout.flush()
+
+
+print 
+print "FINDING ITEMSET SUPPORT",
+if displayLiveResult: stdout.flush()
+
+supports, net_support_count = nItemSubsetSupportCount(data, items, ItemSetSize)
+supports = getSupportFromCount(supports, net_support_count, minsup)
+
+print "... complete",
+print "--- %s seconds ---" % (time.time() - start_time)
+if displayLiveResult: stdout.flush()
+
+print
+print "FINDING SUBSET SUPPORT",
+if displayLiveResult: stdout.flush()
+
+ant_supports, ant_net_support_count = nItemSubsetSupportCount(data, items, AnticedentSize)
+ant_supports = getSupportFromCount(ant_supports, ant_net_support_count, minsup)
+
+print "... complete",
+print "--- %s seconds ---" % (time.time() - start_time)
+print
+if displayLiveResult: stdout.flush()
+
+
+print "ITEMSETS WITH SUPPORT > MINSUP AS FOLLOWS:-"
+print
+if displayLiveResult: stdout.flush()
+
+for i in sorted(supports):
+	if supports[i] > minsup:
+		itemNames = [items[x] for x in i]
+		print i, "|", itemNames, " : ", supports[i]
+		if displayLiveResult: stdout.flush()
+
+print
+print "GETTING BEST ASSOCIATIONS",
+if displayLiveResult: stdout.flush()
+
+bestAssociations = getBestAssociation(supports, ant_supports)
+
+print "... complete",
+print "--- %s seconds ---" % (time.time() - start_time)
+print
+if displayLiveResult: stdout.flush()
+
+
+for i in bestAssociations:
+	ant = i[0]
+	con = i[1]
+	conf = i[2]
+
+	if conf > minconf:
+		antItemNames = [items[x] for x in ant]
+		conItemNames = [items[x] for x in con]
+
+		print antItemNames, "-->", conItemNames, " : ", conf
+		if displayLiveResult: stdout.flush()
+
+print
+print "COMPLETED"
+print "total execution time =", "--- %s seconds ---" % (time.time() - start_time)
