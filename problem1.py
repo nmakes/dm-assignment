@@ -198,24 +198,27 @@ class P1:
 					# print header
 					headRead = False
 				else:
-					itemID = line[0]
-					hour = line[2]
-					price = line[1]
+					itemID = int(line[0])
+					hour = int(line[2])
+					price = float(line[1])
 
 					newPrices[ (itemID, hour) ] = {}
+					newPrices[ (itemID, hour) ]['price'] = float(price)
+
 					i = 3
-					
+
 					for segment in segments:
-						newPrices[ (itemID, hour) ][segment] = line[i]
+						newPrices[ (itemID, hour) ][segment] = float(line[i])
 						i += 1
 
-			# print newPrices.keys()
+		# for key in newPrices:
+		# 	print key, ":", newPrices[key]
 
 		return newPrices
 
 
 	@staticmethod
-	def calculateProfit():
+	def calculateProfitAndPenalty():
 
 		'''
 			decemberData[itemID] = qty
@@ -224,6 +227,7 @@ class P1:
 		decemberData = {}
 		totalItemsSold = 0
 		profit = 0
+		penalty = 0
 
 		with open(config.decemberFileName) as decemberFile:
 
@@ -239,25 +243,42 @@ class P1:
 
 					# print line
 					itemID = int(line[2])
+					hour = int(((((line[5].split())[1]).split(':'))[0]))
+					seg = line[4][0:2]
+					# print hour
 					qty = int(line[3])
 
 					# print itemID, qty
 
 					if itemID in decemberData.keys():
-						decemberData[itemID] += qty
-						totalItemsSold += qty
+						if seg in decemberData[itemID].keys():
+							if hour in decemberData[itemID][seg].keys():
+								decemberData[ itemID ][ seg ][hour] += qty
+							else:
+								decemberData[ itemID ][ seg ][hour] = qty
+						else:
+							decemberData[ itemID ][ seg ] = {}
+							decemberData[ itemID ][ seg ][hour] = qty
 					else:
-						decemberData[itemID] = qty
-						totalItemsSold += qty
-
-		dat = [(key, decemberData[key]) for key in sorted(decemberData.keys())]
-		print dat
-		print len(dat)
-		print totalItemsSold
-
+						decemberData[itemID] = {}
+						decemberData[itemID][seg] = {}
+						decemberData[ itemID ][ seg ][hour] = qty
 
 		newPrices = P1.readNewPrices()
-		profit = 0
 		
 		for (itemID, hour) in newPrices.keys():
-			
+			for seg in newPrices[ (itemID, hour) ]:
+				if seg!='price':
+					if itemID in decemberData.keys():
+						if seg in decemberData[itemID].keys():
+							if hour in decemberData[itemID][seg].keys():
+								priceDiff = (newPrices[ (itemID, hour) ][seg] - newPrices[ (itemID, hour) ]['price'])
+								if priceDiff!= 0: print itemID, seg, hour, priceDiff
+								profit += priceDiff * decemberData[itemID][seg][hour]
+								num_hours = len(decemberData[itemID][seg].keys())
+								penalty += priceDiff * P1.getHourWeight(num_hours) * P1.getSegmentWeight(seg)
+
+		print 'profit: ', profit
+		print 'penalty: ', penalty
+
+		return profit, penalty

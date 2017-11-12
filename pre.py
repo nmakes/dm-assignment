@@ -24,6 +24,6 @@ P1.runFunc1OnFiles(monthFileList, monthWisePricelistFile, monthFileNameList)
 # ----------
 
 # P1.readNewPrices()
-P1.calculateProfit()
+P1.calculateProfitAndPenalty()
 
 # ----------
