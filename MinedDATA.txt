@@ -11834,4 +11834,14 @@ minsup:  0.0001
 minconf:  0.01
 ItemSetSize:  4
 AnticedentSize:  2
-====================================
+==================================================
+
+
+EXTRACTING DATA ... ... complete --- 31903.956152 seconds ---
+
+minsup = 0.0001
+minconf = 0.01
+associations :  2 --> 2
+
+
+FINDING ITEMSET SUPPORT

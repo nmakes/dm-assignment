@@ -238,11 +238,16 @@ def loadRatings():
 	months = ["Dataset/augSales", "Dataset/sepSales", "Dataset/octSales", "Dataset/novSales"]
 
 	for m in months:
+		ratings = {}
 		monthFile = open(m)
 		reader = csv.reader(monthFile, delimiter=',')
 		for line in reader:
-			id = line[1]
-			
+			Id = line[1]
+			Rating = line[7]
+
+			if Id in ratings:
+				
+
 
 def driveProblem2():
 
