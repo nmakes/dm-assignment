@@ -1,7 +1,7 @@
 import csv
 
 # Enter file name here
-file_name = '../Dataset/decSales.csv'
+file_name = 'Dataset/decSales.csv'
 
 output = []
 

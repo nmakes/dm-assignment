@@ -6,21 +6,8 @@ import time
 
 
 start_time = time.time()
-
-
-monthFile = open("p2/novFinal.csv")
-monthWisePricelistFile = open("Dataset/monthwisePriceList.csv")
-reader = csv.reader(monthFile, delimiter=',')
-
-support_count = {}
-
-minsup = 0.000001
-minconf = 0.000001
-
-ItemSetSize = 3
-AnticedentSize = 2
-
 displayLiveResult = False
+
 
 def removeDups(li):
 	
@@ -160,84 +147,137 @@ def getBestAssociation(supports, ant_supports):
 
 	return bestAssociations
 
-items = loadItems(monthWisePricelistFile)
-# print items
+def EXECUTEproblem2(mwplfile, monthFile, minsup, minconf, ItemSetSize, AnticedentSize):
 
-print
-print "EXTRACTING DATA ...",
+	reader = csv.reader(monthFile, delimiter=',')
+	monthWisePricelistFile = open(mwplfile)
+	items = loadItems(monthWisePricelistFile)
+	# print items
 
-data = extractData(reader)
+	print
+	print "EXTRACTING DATA ...",
 
-print "... complete",
-print "--- %s seconds ---" % (time.time() - start_time)
-if displayLiveResult: stdout.flush()
+	data = extractData(reader)
 
-print
-print "minsup =", minsup
-print "minconf =", minconf
-print "associations : ", AnticedentSize, "-->", ItemSetSize - AnticedentSize
-print
-if displayLiveResult: stdout.flush()
+	print "... complete",
+	print "--- %s seconds ---" % (time.time() - start_time)
+	if displayLiveResult: stdout.flush()
 
-
-print 
-print "FINDING ITEMSET SUPPORT",
-if displayLiveResult: stdout.flush()
-
-supports, net_support_count = nItemSubsetSupportCount(data, items, ItemSetSize)
-supports = getSupportFromCount(supports, net_support_count, minsup)
-
-print "... complete",
-print "--- %s seconds ---" % (time.time() - start_time)
-if displayLiveResult: stdout.flush()
-
-print
-print "FINDING SUBSET SUPPORT",
-if displayLiveResult: stdout.flush()
-
-ant_supports, ant_net_support_count = nItemSubsetSupportCount(data, items, AnticedentSize)
-ant_supports = getSupportFromCount(ant_supports, ant_net_support_count, minsup)
-
-print "... complete",
-print "--- %s seconds ---" % (time.time() - start_time)
-print
-if displayLiveResult: stdout.flush()
+	print
+	print "minsup =", minsup
+	print "minconf =", minconf
+	print "associations : ", AnticedentSize, "-->", ItemSetSize - AnticedentSize
+	print
+	if displayLiveResult: stdout.flush()
 
 
-print "ITEMSETS WITH SUPPORT > MINSUP AS FOLLOWS:-"
-print
-if displayLiveResult: stdout.flush()
+	print 
+	print "FINDING ITEMSET SUPPORT",
+	if displayLiveResult: stdout.flush()
 
-for i in sorted(supports):
-	if supports[i] > minsup:
-		itemNames = [items[x] for x in i]
-		print i, "|", itemNames, " : ", supports[i]
-		if displayLiveResult: stdout.flush()
+	supports, net_support_count = nItemSubsetSupportCount(data, items, ItemSetSize)
+	supports = getSupportFromCount(supports, net_support_count, minsup)
 
-print
-print "GETTING BEST ASSOCIATIONS",
-if displayLiveResult: stdout.flush()
+	print "... complete",
+	print "--- %s seconds ---" % (time.time() - start_time)
+	if displayLiveResult: stdout.flush()
 
-bestAssociations = getBestAssociation(supports, ant_supports)
+	print
+	print "FINDING SUBSET SUPPORT",
+	if displayLiveResult: stdout.flush()
 
-print "... complete",
-print "--- %s seconds ---" % (time.time() - start_time)
-print
-if displayLiveResult: stdout.flush()
+	ant_supports, ant_net_support_count = nItemSubsetSupportCount(data, items, AnticedentSize)
+	ant_supports = getSupportFromCount(ant_supports, ant_net_support_count, minsup)
+
+	print "... complete",
+	print "--- %s seconds ---" % (time.time() - start_time)
+	print
+	if displayLiveResult: stdout.flush()
 
 
-for i in bestAssociations:
-	ant = i[0]
-	con = i[1]
-	conf = i[2]
+	print "ITEMSETS WITH SUPPORT > MINSUP AS FOLLOWS:-"
+	print
+	if displayLiveResult: stdout.flush()
 
-	if conf > minconf:
-		antItemNames = [items[x] for x in ant]
-		conItemNames = [items[x] for x in con]
+	for i in sorted(supports):
+		if supports[i] > minsup:
+			itemNames = [items[x] for x in i]
+			print i, "|", itemNames, " : s=", supports[i]
+			if displayLiveResult: stdout.flush()
 
-		print antItemNames, "-->", conItemNames, " : ", conf
-		if displayLiveResult: stdout.flush()
+	print
+	print "GETTING BEST ASSOCIATIONS",
+	if displayLiveResult: stdout.flush()
 
-print
-print "COMPLETED"
-print "total execution time =", "--- %s seconds ---" % (time.time() - start_time)
+	bestAssociations = getBestAssociation(supports, ant_supports)
+
+	print "... complete",
+	print "--- %s seconds ---" % (time.time() - start_time)
+	print
+	if displayLiveResult: stdout.flush()
+
+
+	for i in bestAssociations:
+		ant = i[0]
+		con = i[1]
+		conf = i[2]
+
+		if conf > minconf:
+			antItemNames = [items[x] for x in ant]
+			conItemNames = [items[x] for x in con]
+
+			print antItemNames, "-->", conItemNames, " : c=", conf
+			if displayLiveResult: stdout.flush()
+
+	print
+	print "COMPLETED"
+	print "total execution time =", "--- %s seconds ---" % (time.time() - start_time)
+
+
+def loadRatings():
+	months = ["Dataset/augSales", "Dataset/sepSales", "Dataset/octSales", "Dataset/novSales"]
+
+	for m in months:
+		monthFile = open(m)
+		reader = csv.reader(monthFile, delimiter=',')
+		for line in reader:
+			id = line[1]
+			
+
+def driveProblem2():
+
+	monthFiles = ["p2/novFinal.csv", "p2/octFinal.csv", "p2/sepFinal.csv", "p2/augFinal.csv"]
+	mwplfile = "Dataset/monthwisePriceList.csv"
+
+	minsups = [0.001, 0.0001, 0.00001]
+	minconfs = [0.1, 0.01, 0.001]
+
+	ItemSetSizes =    [2, 3, 3, 4, 4]
+	AnticedentSizes = [1, 2, 1, 3, 2]
+
+	for mf in monthFiles:
+
+		for m in range(len(minsups)):
+
+			for i in range(len(ItemSetSizes)):
+
+				ItemSetSize = ItemSetSizes[i]
+				AnticedentSize = AnticedentSizes[i]
+				monthFile = open(mf)
+				minsup = minsups[m]
+				minconf = minconfs[m]
+
+				print
+				print "=================================================="
+				print "monthFile: ", monthFile
+				print "minsup: ", minsup
+				print "minconf: ", minconf
+				print "ItemSetSize: ", ItemSetSize
+				print "AnticedentSize: ", AnticedentSize
+				print "=================================================="
+				print
+
+
+				EXECUTEproblem2(mwplfile, monthFile, minsup, minconf, ItemSetSize, AnticedentSize)
+
+driveProblem2()
